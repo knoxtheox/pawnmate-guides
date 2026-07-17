@@ -6,98 +6,177 @@
 <title>PawnMate Command Center</title>
 <style>
   :root{
-    --panel:#ffffff;--ink:#1a1a1a;--muted:#6b7280;--line:#f0d9d9;
-    --accent:#dc2626;--accent-soft:#fef2f2;
+    --ink:#22304d;--muted:#5b6b7d;--line:#dbe1ec;
+    --blue:#22304d;--blue-dark:#1a2540;--blue-soft:#e9edf8;
+    --gold:#f4c14e;--gold-dark:#dca82f;
+    --sidebar-w:270px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
   body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    background:linear-gradient(135deg,#dc2626 0%,#b91c1c 50%,#7f1d1d 100%);
-    min-height:100vh;color:var(--ink);padding:40px 20px;
+    color:var(--ink);background:#eef2f6;
   }
-  .wrap{max-width:1080px;margin:0 auto}
-  .shell{background:var(--panel);border-radius:24px;box-shadow:0 30px 60px -20px rgba(127,29,29,.45);overflow:hidden}
-  .head{padding:38px 44px 30px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
-  .brand{display:flex;align-items:center;gap:14px}
-  .logo{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#dc2626,#991b1b);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:20px}
-  h1{font-size:26px;letter-spacing:-.02em}
-  .sub{color:var(--muted);font-size:14px;margin-top:3px}
-  .search{display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:9px 14px;color:var(--muted);font-size:14px;min-width:240px}
-  .search input{border:none;background:none;outline:none;font-size:14px;color:var(--ink);width:100%}
-  .body{padding:32px 44px 44px}
-  .section{margin-bottom:34px}
+  .app{display:flex;min-height:100vh}
+
+  /* ── Sidebar ── */
+  .sidebar{
+    width:var(--sidebar-w);flex:0 0 var(--sidebar-w);
+    background:linear-gradient(180deg,#26365a 0%,#1b2740 100%);
+    color:#fff;display:flex;flex-direction:column;
+    padding:26px 18px;position:sticky;top:0;height:100vh;
+  }
+  .brand{display:flex;align-items:center;gap:12px;padding:0 6px 20px}
+  .logo{width:42px;height:42px;background:var(--gold);color:var(--blue-dark);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px}
+  .brand h1{font-size:17px;line-height:1.2;letter-spacing:-.01em}
+  .brand .sub{font-size:11.5px;opacity:.85;margin-top:2px}
+  .search{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);padding:9px 12px;margin-bottom:18px}
+  .search input{border:none;background:none;outline:none;font-size:13.5px;color:#fff;width:100%}
+  .search input::placeholder{color:rgba(255,255,255,.7)}
+  .nav{display:flex;flex-direction:column;gap:3px;overflow-y:auto;flex:1}
+  .nav-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;opacity:.65;padding:6px 10px 8px}
+  .nav-item{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 12px;cursor:pointer;font-size:13.5px;font-weight:550;
+    color:#fff;transition:background .15s ease;user-select:none;
+    border-left:3px solid transparent;
+  }
+  .nav-item:hover{background:rgba(255,255,255,.12)}
+  .nav-item.active{background:var(--gold);color:var(--blue-dark);font-weight:700;border-left-color:var(--gold-dark)}
+  .nav-item .count{font-size:11px;background:rgba(255,255,255,.2);padding:1px 8px}
+  .nav-item.active .count{background:rgba(26,37,64,.18);color:var(--blue-dark)}
+  .side-foot{font-size:11px;opacity:.75;padding:14px 8px 0;line-height:1.5}
+
+  /* ── Main ── */
+  .main{flex:1;padding:34px 40px;overflow-y:auto}
+  .main-head{margin-bottom:24px;border-bottom:3px solid var(--gold);padding-bottom:14px;display:inline-block}
+  .main-head h2{font-size:23px;letter-spacing:-.02em;color:var(--blue-dark)}
+  .main-head .desc{color:var(--muted);font-size:14px;margin-top:4px}
+  .section{margin-bottom:32px}
   .section:last-child{margin-bottom:0}
-  .sec-head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
-  .dot{width:9px;height:9px;border-radius:50%;background:var(--accent)}
-  .sec-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
-  .card{display:flex;align-items:flex-start;gap:14px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;text-decoration:none;color:inherit;transition:all .18s ease;position:relative}
-  .card:hover{border-color:var(--accent);box-shadow:0 12px 24px -12px rgba(220,38,38,.35);transform:translateY(-2px)}
-  .ico{flex:0 0 auto;width:40px;height:40px;border-radius:11px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:19px}
-  .card:hover .ico{background:var(--accent);color:#fff}
-  .c-title{font-size:15px;font-weight:650;line-height:1.3}
-  .c-desc{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.4}
-  .arrow{position:absolute;top:16px;right:16px;color:#cbd5e1;font-size:15px;transition:all .18s ease}
-  .card:hover .arrow{color:var(--accent);transform:translateX(2px)}
-  .foot{padding:16px 44px;background:#f8fafc;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);text-align:center}
-  .empty{grid-column:1/-1;color:var(--muted);font-size:14px;padding:20px;text-align:center}
+  .sec-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--blue);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .sec-title::before{content:"";width:9px;height:9px;background:var(--gold)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+  .card{display:flex;align-items:flex-start;gap:13px;background:#fff;border:1px solid var(--line);padding:17px;text-decoration:none;color:inherit;transition:all .15s ease;position:relative;border-top:3px solid var(--blue)}
+  .card:hover{border-color:var(--line);border-top-color:var(--gold);box-shadow:0 10px 22px -12px rgba(34,48,77,.4);transform:translateY(-2px)}
+  .ico{flex:0 0 auto;width:38px;height:38px;background:var(--blue-soft);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:18px}
+  .card:hover .ico{background:var(--blue);color:#fff}
+  .c-title{font-size:14.5px;font-weight:650;line-height:1.3}
+  .c-desc{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4}
+  .arrow{position:absolute;top:15px;right:15px;color:#b7c6d6;font-size:15px;transition:all .15s ease}
+  .card:hover .arrow{color:var(--blue);transform:translateX(2px)}
+  .empty{color:var(--muted);font-size:14px;padding:30px 0}
+
+  @media(max-width:760px){
+    .app{flex-direction:column}
+    .sidebar{width:100%;flex:none;height:auto;position:static;padding:18px}
+    .nav{flex-direction:row;flex-wrap:wrap;overflow:visible}
+    .nav-label{display:none}
+    .side-foot{display:none}
+    .main{padding:24px 20px}
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="shell">
-    <div class="head">
-      <div class="brand">
-        <div class="logo">PM</div>
-        <div>
-          <h1>PawnMate Command Center</h1>
-          <div class="sub">Quick-reference guides for daily operations</div>
-        </div>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 64 64" width="27" height="27" fill="#1a2540" aria-label="PawnMate">
+          <circle cx="32" cy="15" r="8.2"/>
+          <rect x="23" y="23.2" width="18" height="3.8"/>
+          <path d="M28 27.8c.7 6.6-1.9 11.6-5.6 18.2h19.2c-3.7-6.6-6.3-11.6-5.6-18.2z"/>
+          <rect x="18.5" y="47.5" width="27" height="3.8"/>
+          <path d="M16 53h32l2.6 6.2H13.4z"/>
+        </svg>
       </div>
-      <div class="search">
-        <span>🔍</span>
-        <input id="search" placeholder="Search guides…" oninput="render()">
+      <div>
+        <h1>PawnMate</h1>
+        <div class="sub">Command Center</div>
       </div>
     </div>
-    <div class="body" id="board"></div>
-    <div class="foot">Add or edit guides in the <code>GUIDES</code> list at the top of this file — one line per guide.</div>
-  </div>
+    <div class="search">
+      <span>🔍</span>
+      <input id="search" placeholder="Search guides…" oninput="render()">
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot">Edit the <b>GUIDES</b> list at the top of this file to add or change guides.</div>
+  </aside>
+
+  <main class="main">
+    <div class="main-head">
+      <h2 id="head-title">All Guides</h2>
+      <div class="desc" id="head-desc">Quick-reference guides for daily PawnMate operations</div>
+    </div>
+    <div id="board"></div>
+  </main>
 </div>
 
 <script>
 /* ─────────────────────────────────────────────────────────────
    EDIT HERE: to add a guide, copy one line and fill it in.
-   section = the category header it appears under (in order below)
+   section = the category it appears under (order set by SECTIONS)
    icon    = any emoji     url = the Scribe share link ("#" = placeholder)
    ───────────────────────────────────────────────────────────── */
 const SECTIONS = ["Getting Started","Reports & History","Pawn Defaults & Layaways","Inventory & Listings"];
 
 const GUIDES = [
-  { section:"Getting Started",            icon:"🔑", title:"Log Into PawnMate",                     desc:"Sign in and access your account",        url:"https://scribehow.com/o/RoG6ojVhQCy35-aQT3iaeg/viewer/How_to_Log_Into_PawnMate__Tv1_FnwmRGeMjmakYHLcPg" },
-  { section:"Getting Started",            icon:"🏪", title:"Switch Between Stores",                 desc:"Move between store locations",            url:"https://scribehow.com/o/RoG6ojVhQCy35-aQT3iaeg/viewer/How_to_Switch_Between_Stores_on_PawnMate__AhCd3KcfTiqZ8upORCnXfg" },
+  { section:"Getting Started",          icon:"🔑", title:"Log Into PawnMate",                     desc:"Sign in and access your account",     url:"https://scribehow.com/o/RoG6ojVhQCy35-aQT3iaeg/viewer/How_to_Log_Into_PawnMate__Tv1_FnwmRGeMjmakYHLcPg" },
+  { section:"Getting Started",          icon:"🏪", title:"Switch Between Stores",                 desc:"Move between store locations",         url:"https://scribehow.com/o/RoG6ojVhQCy35-aQT3iaeg/viewer/How_to_Switch_Between_Stores_on_PawnMate__AhCd3KcfTiqZ8upORCnXfg" },
 
-  { section:"Reports & History",          icon:"📊", title:"Generate a Management Report",          desc:"Pull performance & summary reports",      url:"https://scribehow.com/o/RoG6ojVhQCy35-aQT3iaeg/viewer/How_To_Generate_A_Management_Report_In_PawnMate__v6cei59nQSio2lnG72zm6g" },
-  { section:"Reports & History",          icon:"🧾", title:"Access Transaction History",            desc:"Look up past transactions",               url:"https://scribehow.com/o/RoG6ojVhQCy35-aQT3iaeg/viewer/How_to_Access_Transaction_History_in_Pawnmate__iFL7HupOSQqnw-IpFXbsKA" },
+  { section:"Reports & History",        icon:"📊", title:"Generate a Management Report",          desc:"Pull performance & summary reports",   url:"https://scribehow.com/o/RoG6ojVhQCy35-aQT3iaeg/viewer/How_To_Generate_A_Management_Report_In_PawnMate__v6cei59nQSio2lnG72zm6g" },
+  { section:"Reports & History",        icon:"🧾", title:"Access Transaction History",            desc:"Look up past transactions",            url:"https://scribehow.com/o/RoG6ojVhQCy35-aQT3iaeg/viewer/How_to_Access_Transaction_History_in_Pawnmate__iFL7HupOSQqnw-IpFXbsKA" },
 
-  { section:"Pawn Defaults & Layaways",   icon:"📅", title:"View the 15-Day Pawn Defaultable List", desc:"See pawns approaching default",           url:"https://scribehow.com/o/RoG6ojVhQCy35-aQT3iaeg/viewer/How_to_View_the_15_Day_Pawn_Defaultable_List__V6qM_n4fTzyWR-t2IZUJwg" },
-  { section:"Pawn Defaults & Layaways",   icon:"💳", title:"Current & Defaultable Layaways",        desc:"Track active and at-risk layaways",       url:"https://scribehow.com/o/RoG6ojVhQCy35-aQT3iaeg/viewer/How_to_View_Current_and_Defaultable_Layaways_in_Pawnmate__oTSPHQZmTDqz1edj7lOU_Q" },
+  { section:"Pawn Defaults & Layaways", icon:"📅", title:"View the 15-Day Pawn Defaultable List", desc:"See pawns approaching default",         url:"https://scribehow.com/o/RoG6ojVhQCy35-aQT3iaeg/viewer/How_to_View_the_15_Day_Pawn_Defaultable_List__V6qM_n4fTzyWR-t2IZUJwg" },
+  { section:"Pawn Defaults & Layaways", icon:"💳", title:"Current & Defaultable Layaways",        desc:"Track active and at-risk layaways",     url:"https://scribehow.com/o/RoG6ojVhQCy35-aQT3iaeg/viewer/How_to_View_Current_and_Defaultable_Layaways_in_Pawnmate__oTSPHQZmTDqz1edj7lOU_Q" },
 
-  { section:"Inventory & Listings",       icon:"📦", title:"Search for Aged Inventory",             desc:"Find items sitting in stock too long",    url:"https://scribehow.com/o/RoG6ojVhQCy35-aQT3iaeg/viewer/How_to_Search_for_Aged_Inventory_on_PawnMate__rQ81QCU8SoeGCUiJP1cf0g" },
-  { section:"Inventory & Listings",       icon:"🌐", title:"View Online Listings",                 desc:"See items listed online",                 url:"https://scribehow.com/o/RoG6ojVhQCy35-aQT3iaeg/viewer/How_To_View_Online_Listings_On_PawnMate__c-n1b3wfRhCGtoB7r1zUkg" },
+  { section:"Inventory & Listings",     icon:"📦", title:"Search for Aged Inventory",             desc:"Find items sitting in stock too long", url:"https://scribehow.com/o/RoG6ojVhQCy35-aQT3iaeg/viewer/How_to_Search_for_Aged_Inventory_on_PawnMate__rQ81QCU8SoeGCUiJP1cf0g" },
+  { section:"Inventory & Listings",     icon:"🌐", title:"View Online Listings",                 desc:"See items listed online",              url:"https://scribehow.com/o/RoG6ojVhQCy35-aQT3iaeg/viewer/How_To_View_Online_Listings_On_PawnMate__c-n1b3wfRhCGtoB7r1zUkg" },
 ];
 /* ───────────────────────────────────────────────────────────── */
 
+let active = "All";
+
+function buildNav(){
+  const nav = document.getElementById("nav");
+  nav.innerHTML = `<div class="nav-label">Categories</div>`;
+  const mk = (name, count) => {
+    const el = document.createElement("div");
+    el.className = "nav-item" + (active === name ? " active" : "");
+    el.innerHTML = `<span>${name}</span><span class="count">${count}</span>`;
+    el.onclick = () => { active = name; render(); };
+    nav.appendChild(el);
+  };
+  mk("All", GUIDES.length);
+  SECTIONS.forEach(s => mk(s, GUIDES.filter(g => g.section === s).length));
+}
+
 function render(){
+  buildNav();
   const q = (document.getElementById("search").value || "").toLowerCase();
+  document.getElementById("head-title").textContent = active === "All" ? "All Guides" : active;
+  document.getElementById("head-desc").textContent = active === "All"
+    ? "Quick-reference guides for daily PawnMate operations"
+    : `${GUIDES.filter(g=>g.section===active).length} guide(s) in this category`;
+
   const board = document.getElementById("board");
   board.innerHTML = "";
-  SECTIONS.forEach(sec => {
+  const shown = SECTIONS.filter(s => active === "All" || s === active);
+  let total = 0;
+
+  shown.forEach(sec => {
     const items = GUIDES.filter(g => g.section === sec &&
       (g.title.toLowerCase().includes(q) || g.desc.toLowerCase().includes(q)));
     if(!items.length) return;
+    total += items.length;
     const section = document.createElement("div");
     section.className = "section";
-    section.innerHTML = `<div class="sec-head"><span class="dot"></span><span class="sec-title">${sec}</span></div>`;
+    if(active === "All"){
+      const h = document.createElement("div");
+      h.className = "sec-title";
+      h.textContent = sec;
+      section.appendChild(h);
+    }
     const grid = document.createElement("div");
     grid.className = "grid";
     items.forEach(g => {
@@ -113,7 +192,8 @@ function render(){
     section.appendChild(grid);
     board.appendChild(section);
   });
-  if(!board.children.length){
+
+  if(!total){
     board.innerHTML = `<div class="empty">No guides match “${q}”.</div>`;
   }
 }
