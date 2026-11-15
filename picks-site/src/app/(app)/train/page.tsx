@@ -9,7 +9,7 @@ export default function TrainPage() {
         <Button disabled>Train</Button>
       </PageHeader>
       <Card title="Last graded week">
-        <Empty>Nothing graded yet. The Nov 14 log is imported as week 11 in milestone 2.</Empty>
+        <Empty>Week 11 (Nov 14) is imported and graded; see History. Metrics and proposals arrive in milestone 5.</Empty>
       </Card>
       <Card title="Season to date">
         <Empty>Record by market and tier, calibration chart, margin and total error: milestone 5.</Empty>

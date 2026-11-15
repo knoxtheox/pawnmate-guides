@@ -2,7 +2,7 @@
 
 Private, sign-in-only CFB / NFL picks dashboard. Next.js 16 (App Router, TypeScript) + Railway Postgres, deployed on Railway.
 
-Built in six milestones from the build spec; this branch currently holds **milestone 1 (skeleton)**.
+Built in six milestones from the build spec; this branch currently holds **milestones 1-2 (skeleton, game-model engine)**.
 
 ## Local development
 
@@ -36,7 +36,7 @@ To change the password, run `npm run hash-password` and replace `AUTH_PASSWORD_H
 4. In the app service's **Variables**, add the variables above (`DATABASE_URL` as the reference `${{Postgres.DATABASE_URL}}`).
 5. **Settings → Networking → Generate Domain** for the free `*.up.railway.app` HTTPS address.
 
-`railway.json` sets the build, runs `npm run db:migrate` before each deploy, and uses `/api/health` as the health check.
+`railway.json` sets the build, runs `npm run db:migrate && npm run db:seed` before each deploy (the seed creates model version 1 and imports the Nov 14 log as week 11, once), and uses `/api/health` as the health check.
 
 ## Security
 

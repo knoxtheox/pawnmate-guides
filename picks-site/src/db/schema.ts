@@ -29,6 +29,8 @@ export const games = pgTable(
     season: integer("season").notNull(),
     week: integer("week").notNull(),
     kickoff: ts("kickoff").notNull(),
+    /** False when only the date is known (e.g. games imported from the log). */
+    kickoffKnown: boolean("kickoff_known").notNull().default(true),
     home: text("home").notNull(),
     away: text("away").notNull(),
     neutral: boolean("neutral").notNull().default(false),
@@ -142,11 +144,14 @@ export const picks = pgTable(
     projectedTotal: doublePrecision("projected_total"),
     projectedHome: doublePrecision("projected_home"),
     projectedAway: doublePrecision("projected_away"),
-    probability: doublePrecision("probability").notNull(),
+    /** Null only for a logged "No bet". */
+    probability: doublePrecision("probability"),
     /** 'lean' | 'solid' | 'strong' | 'lock' | null (below lean) */
     tier: text("tier"),
-    /** 'home' | 'away' | 'over' | 'under' */
+    /** 'home' | 'away' | 'over' | 'under' | 'pass' */
     pickSide: text("pick_side").notNull(),
+    /** Human label, e.g. "Oregon St +16.5". */
+    pickText: text("pick_text"),
     pickLine: doublePrecision("pick_line"),
     oddsUsed: integer("odds_used"),
     breakEven: doublePrecision("break_even"),
@@ -156,6 +161,10 @@ export const picks = pgTable(
     /** { odds: id, ratings: [...ids], injuries: pulled_at, weather: {...}, ... } */
     inputSnapshots: jsonb("input_snapshots"),
     isCurrent: boolean("is_current").notNull().default(true),
+    /** 'pipeline' | 'import' | 'manual' */
+    source: text("source").notNull().default("pipeline"),
+    live: boolean("live").notNull().default(false),
+    notes: text("notes"),
     createdAt: createdAt(),
   },
   (t) => [index("picks_game_idx").on(t.gameId, t.market)],
@@ -219,6 +228,7 @@ export const tickets = pgTable("tickets", {
   /** 'W' | 'L' | 'P' | 'open' */
   result: text("result").notNull().default("open"),
   return: money("return"),
+  notes: text("notes"),
   createdAt: createdAt(),
 });
 
